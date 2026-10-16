@@ -1,5 +1,7 @@
 # Bus Challan Autofiller
 
+Version 1.1.0 · see [CHANGELOG.md](CHANGELOG.md)
+
 Generates numbered bus challans in Bengali and English. Each challan has a **Main** form (outgoing trip) and a **Secondary** form (return trip) that share one challan number. Every page carries 36 seats, A-1 to I-4.
 
 Bengali prints use **Noto Serif Bengali**, bundled inside the app, so the forms look the same on any computer, online or offline. English prints use Times New Roman. The company name, head office and phone numbers come from `settings.json`. No passenger, driver or transaction data from old samples is included.
@@ -92,6 +94,7 @@ The `fonts/` folder contains Noto Serif Bengali (regular and semi-bold, Bengali 
 python challan_autofill.py challan_input.xlsx --out generated --language bn --open
 python challan_autofill.py --reprint 01/2026 --out generated --language en --open
 python challan_autofill.py --blank --out generated
+python challan_autofill.py --version
 python -m unittest discover -s tests -v
 ```
 

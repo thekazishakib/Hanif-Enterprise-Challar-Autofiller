@@ -3,6 +3,7 @@ import argparse,json,sys,tempfile,webbrowser
 from pathlib import Path
 from bus_data import InputError,load_data,blank_data,save_numbered,list_saved,saved_html
 from print_forms import document
+from version import __version__
 BASE=Path(__file__).resolve().parent
 REGISTRY=BASE/'challan-register.sqlite3'
 
@@ -38,7 +39,7 @@ def reprint(number,parent,registry=REGISTRY):
 def gui():
     import tkinter as tk
     from tkinter import filedialog,messagebox,ttk
-    root=tk.Tk();root.title('Bus challan / বাস চালান');root.geometry('800x510')
+    root=tk.Tk();root.title(f'Bus challan / বাস চালান  v{__version__}');root.geometry('800x510')
     f=ttk.Frame(root,padding=24);f.pack(fill='both',expand=True)
     ttk.Label(f,text='বাস চালান · বাংলা / English',font=('Nirmala UI',18,'bold')).pack(anchor='w')
     ttk.Label(f,text='Fill Trip Details, choose counters in Main / Secondary, then save the workbook.').pack(anchor='w',pady=(8,14))
@@ -79,7 +80,7 @@ def gui():
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('input',nargs='?',type=Path)
     p.add_argument('--out',type=Path,default=BASE/'generated');p.add_argument('--config',type=Path,default=BASE/'settings.json')
-    p.add_argument('--blank',action='store_true');p.add_argument('--reprint');p.add_argument('--language',choices=['bn','en'],default='bn');p.add_argument('--open',action='store_true')
+    p.add_argument('--blank',action='store_true');p.add_argument('--reprint');p.add_argument('--language',choices=['bn','en'],default='bn');p.add_argument('--open',action='store_true');p.add_argument('--version',action='version',version=f'%(prog)s {__version__}')
     args=p.parse_args()
     if not args.input and not args.blank and not args.reprint:gui();return 0
     try:paths=reprint(args.reprint,args.out) if args.reprint else generate(args.input,args.out,args.config,blank=args.blank)
