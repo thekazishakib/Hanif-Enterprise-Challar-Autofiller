@@ -1,0 +1,18 @@
+# Real challan data (never publish)
+challan-register.sqlite3
+generated/
+
+# Real signature images
+*.png
+!fonts/**
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
