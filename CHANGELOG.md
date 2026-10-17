@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1 - 2026-10-17
+- Bottom signature line is now "Booking master signature" and "Manager signature". The driver signature line was removed.
+
 ## 1.1.0 - 2026-10-16
 - Bengali prints now use Noto Serif Bengali, bundled in `fonts/` and embedded in every generated HTML file.
 - README and START_HERE rewritten in English.
