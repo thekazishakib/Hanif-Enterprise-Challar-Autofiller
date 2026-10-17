@@ -6,6 +6,11 @@ from pathlib import Path
 from bus_data import SEATS,BN,EN
  
 FONT_DIR=Path(__file__).resolve().parent/'fonts'
+ASSET_DIR=Path(__file__).resolve().parent/'assets'
+def _data_uri(name):
+    f=ASSET_DIR/name
+    return 'data:image/png;base64,'+base64.b64encode(f.read_bytes()).decode('ascii') if f.is_file() else ''
+LOGO_SMALL=_data_uri('logo-symbol-small.png');LOGO_WATERMARK=_data_uri('logo-symbol.png')
 RANGES={'bengali':'U+0951-0952,U+0964-0965,U+0980-09FE,U+1CD0,U+1CD2,U+1CD5-1CD6,U+1CD8,U+1CE1,U+1CEA,U+1CED,U+1CF2,U+1CF5-1CF7,U+200C-200D,U+20B9,U+25CC,U+A8F1',
  'latin':'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD'}
 def font_face_css():
@@ -52,6 +57,9 @@ def section(trip,index,config,lang):
     route_key='Route EN' if lang=='en' and d.get('Route EN') else 'Route'
     route=f'<div class="route"><strong>{word("ট্রিপ","Trip",lang)}: {val(from_key)} → {val(to_key)}</strong><span>{word("রুট","Route",lang)}: {val(route_key)}</span></div>'
     coaster=f'<div class="coaster"><strong>{word("বাইরের কোস্টার (প্রযোজ্য হলে)","External coaster (if applicable)",lang)}</strong><div>{word("নম্বর","No.",lang)}: {val("Coaster No")} &nbsp; {word("তারিখ","Date",lang)}: {val("Coaster Date")} &nbsp; {word("সময়","Time",lang)}: {val("Coaster Time")} &nbsp; {word("ভাড়া","Fare",lang)}: {numeric(d.get("Coaster Fare",0),lang)}</div></div>'
+    def sig_img(role,cls):
+        src=config.get('sig_'+role,'')
+        return f'<img class="{cls}" alt="" src="{esc(src)}">' if src else ''
     totals={k:Decimal(0) for k in ['Passengers','Fare BDT','Commission BDT','Net BDT']};rows=[]
     for i,seat in enumerate(SEATS):
         item=trip['seats'][seat]
@@ -63,26 +71,31 @@ def section(trip,index,config,lang):
             for k in totals:totals[k]+=item[k]
         checker=''
         if i==0:
-            checker=f'<td rowspan="37" class="checker"><div>{word("চেকার","Checker",lang)}: {val("Checker Name")}</div><p>{word("সিল ও স্বাক্ষর","Seal and signature",lang)}</p></td>'
+            checker=f'<td rowspan="37" class="checker"><div>{word("চেকার","Checker",lang)}: {val("Checker Name")}</div>{sig_img("checker","checker-signature")}<p>{word("সিল ও স্বাক্ষর","Seal and signature",lang)}</p></td>'
         rows.append(f'<tr data-seat="{seat}"><td class="seat">{seat}</td>'+''.join('<td>'+c+'</td>' for c in cells)+checker+'</tr>')
     rows.append('<tr class="total"><td colspan="2">'+word('মোট','Total',lang)+'</td>'+''.join('<td>'+numeric(v,lang)+'</td>' for v in totals.values())+'<td></td></tr>')
     headings=[('সিট নং','Seat'),('কাউন্টারের নাম','Counter'),('যাওয়া' if outgoing else 'আসা','Pax'),('টাকা','Fare'),('কমিশন','Commission'),('নিট টাকা','Net'),('স্বাক্ষর','Signature'),('চেকারের সিল/স্বাক্ষর','Checker seal/signature')]
     cash=''.join(f'<div>{LABELS[k][lang=="en"]}: <b>{numeric(d.get(k,0),lang)}</b></div>' for k in ['Book Cash','Counter Deposit','Refund Deposit','Fuel Deposit','Wash Deposit','B5 Deposit','Sohoj Cash'])
-    return f'''<section class="sheet {'main' if outgoing else 'secondary'}"><header><h1>{esc(name)}</h1>{contact}<div class="page-name">{title}</div></header>
+    logo=f'<img class="logo" alt="" src="{LOGO_SMALL}">' if LOGO_SMALL else ''
+    watermark=f'<img class="watermark" alt="" src="{LOGO_WATERMARK}">' if LOGO_WATERMARK else ''
+    return f'''<section class="sheet {'main' if outgoing else 'secondary'}">{watermark}<header><h1>{logo}{esc(name)}</h1>{contact}<div class="page-name">{title}</div></header>
     <div class="metadata">{metadata}</div>{route}{coaster}<table><colgroup><col style="width:6%"><col style="width:23%"><col style="width:6%"><col style="width:10%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:20%"></colgroup>
     <thead><tr>{''.join('<th>'+word(*h,lang)+'</th>' for h in headings)}</tr></thead><tbody>{''.join(rows)}</tbody></table>
-    <div class="cash">{cash}</div><div class="signatures"><div>{word('বুকিং মাস্টারের স্বাক্ষর','Booking master signature',lang)}: __________________</div><div>{word('ম্যানেজারের স্বাক্ষর','Manager signature',lang)}: __________________</div></div></section>'''
+    <div class="cash">{cash}</div><div class="signatures"><div class="sigbox"><div class="sigimg">{sig_img("booking_master","signature-fixed")}</div><div>{word('বুকিং মাস্টারের স্বাক্ষর','Booking master signature',lang)}: __________________</div></div><div class="sigbox"><div class="sigimg">{sig_img("manager","signature-fixed")}</div><div>{word('ম্যানেজারের স্বাক্ষর','Manager signature',lang)}: __________________</div></div></div></section>'''
  
 CSS='''
 *{box-sizing:border-box}body{margin:0;background:#e9eef2;color:#17202a;font-family:"Noto Serif Bengali",serif}body.en{font-family:"Times New Roman","Noto Serif Bengali",serif}
 .toolbar{max-width:980px;margin:18px auto;display:flex;gap:18px;align-items:center;font:14px Arial,sans-serif;padding:0 18px}.toolbar button{border:0;border-radius:5px;background:#176e8b;color:white;font:inherit;padding:13px 20px;cursor:pointer}.toolbar p{margin:0;line-height:1.5}.warning{color:#9e223d;display:none}.bn .toolbar{font-family:"Noto Serif Bengali",serif}
-.sheet{--accent:#197e9a;width:190mm;margin:20px auto;background:white;box-shadow:0 3px 18px #182f4318;font-size:9pt;overflow-wrap:anywhere}.sheet.secondary{--accent:#a12d51}
+.sheet{position:relative;--accent:#197e9a;width:190mm;margin:20px auto;background:white;box-shadow:0 3px 18px #182f4318;font-size:9pt;overflow-wrap:anywhere}.sheet.secondary{--accent:#a12d51}
+header,.metadata,.route,.coaster,table,.cash,.signatures{position:relative;z-index:1}
+.watermark{position:absolute;z-index:0;left:50%;top:52%;width:120mm;height:120mm;transform:translate(-50%,-50%);opacity:.06;pointer-events:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.logo{height:1.6em;width:1.6em;vertical-align:middle;margin-right:.3em}
 header{text-align:center;padding-top:2mm;overflow:hidden;margin-bottom:2mm}h1{color:var(--accent);font-size:24pt;line-height:1.12;margin:0 0 1mm}header p{margin:0;font-size:8pt;line-height:1.4}.page-name{color:var(--accent);font-size:9pt;line-height:1.3;margin-top:1mm}
 .metadata{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4mm;margin-bottom:2mm}.metadata>div>div{min-height:4.7mm;line-height:1.3}.metadata b{font-weight:400}
 .route{display:flex;justify-content:space-between;gap:4mm;line-height:1.35;margin-bottom:1.5mm}.route span{max-width:60%}.coaster{font-size:8pt;border-top:.2mm solid #b9c9d1;padding:1mm 0;line-height:1.3;margin-bottom:1.5mm}.coaster strong{font-weight:600}
-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:.25mm solid #6999ac;text-align:left;vertical-align:middle;padding:.25mm .8mm;line-height:1.12}th{background:var(--accent);color:white;font-weight:400;height:6mm}td{height:4.2mm}.seat{font-family:Arial,sans-serif;font-size:7.5pt}.total td{font-weight:600}.checker{vertical-align:top;padding:3mm 2mm}.checker p{font-size:8pt;margin-top:10mm}.signature-image{max-width:100%;height:3mm;object-fit:contain;display:block}
-.en .seat{font-family:"Times New Roman",serif}.cash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm 4mm;margin-top:3mm;font-size:8pt;line-height:1.3}.cash b{font-weight:400}.signatures{display:flex;justify-content:space-between;gap:8mm;margin-top:5mm;padding-bottom:2mm;font-size:8pt}
-@page{size:A4;margin:10mm}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}th{-webkit-print-color-adjust:exact;print-color-adjust:exact}.cash,.signatures,.metadata,.route,.coaster{break-inside:avoid}tr{break-inside:avoid}}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td{border:.25mm solid #6999ac;text-align:center;vertical-align:middle;padding:.25mm .8mm;line-height:1.12}th{background:var(--accent);color:white;font-weight:400;height:6mm}td{height:4.2mm}.seat{font-family:Arial,sans-serif;font-size:7.5pt}.total td{font-weight:600}.checker{vertical-align:top;padding:3mm 2mm}.checker p{font-size:8pt;margin-top:10mm}.signature-image{max-width:100%;height:3mm;object-fit:contain;display:block}
+.en .seat{font-family:"Times New Roman",serif}.cash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5mm 4mm;margin-top:3mm;font-size:8pt;line-height:1.3}.cash b{font-weight:400}.signatures{display:flex;justify-content:space-between;gap:8mm;margin-top:2mm;padding-bottom:2mm;font-size:8pt}.sigimg{height:13mm;display:flex;align-items:flex-end;justify-content:center;margin-bottom:-1.5mm}.signature-fixed{max-height:13mm;max-width:48mm;object-fit:contain}.checker-signature{display:block;max-width:90%;max-height:16mm;object-fit:contain;margin:4mm auto 0}
+@page{size:A4;margin:10mm}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}th{-webkit-print-color-adjust:exact;print-color-adjust:exact}.cash,.signatures,.sigbox,.metadata,.route,.coaster{break-inside:avoid}tr{break-inside:avoid}}
 @media screen{.sheet{outline:10mm solid white;margin:18mm auto}}
 '''
  
