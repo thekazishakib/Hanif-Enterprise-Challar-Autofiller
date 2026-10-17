@@ -1,7 +1,7 @@
 """Save numbered bilingual bus challans, or reprint a saved pair unchanged."""
 import argparse,json,sys,tempfile,webbrowser
 from pathlib import Path
-from bus_data import InputError,load_data,blank_data,save_numbered,list_saved,saved_html
+from bus_data import InputError,load_data,blank_data,save_numbered,list_saved,saved_html,role_signatures
 from print_forms import document
 from version import __version__
 BASE=Path(__file__).resolve().parent
@@ -11,6 +11,12 @@ def load_config(path):
     config=json.loads(Path(path).read_text(encoding='utf-8-sig'))
     if not isinstance(config,dict) or any(not isinstance(v,str) for v in config.values()):
         raise InputError('Company settings must be text.')
+    return config
+
+def with_signatures(config):
+    """Copy of the settings plus embedded Booking master / Manager / Checker signature images."""
+    config=dict(config)
+    for role,image in role_signatures(config,BASE).items(): config['sig_'+role]=image
     return config
 
 def export_pair(htmls,parent,prefix):
@@ -23,7 +29,7 @@ def export_pair(htmls,parent,prefix):
     return paths
 
 def generate(input_path,output_parent,config_path=BASE/'settings.json',blank=False,registry=REGISTRY):
-    config=load_config(config_path)
+    config=with_signatures(load_config(config_path))
     if blank:
         return export_pair({lang:document(blank_data(),config,lang) for lang in ['bn','en']},output_parent,'blank-forms')
     trips=load_data(input_path)  # All validation happens before reserving a number.
