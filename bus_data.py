@@ -87,6 +87,24 @@ def signature_image(raw,base):
     except (OSError,ValueError) as exc: raise InputError(f'Cannot read signature image: {path.name}') from exc
     return 'data:image/'+('png' if kind=='PNG' else 'jpeg')+';base64,'+base64.b64encode(data).decode('ascii')
 
+SIGNATURE_ROLES=('booking_master','manager','checker')
+def role_signatures(config,base):
+    """Fixed signature images for Booking master, Manager and Checker.
+    Use settings.json (<role>_signature) or drop <role-with-dashes>.png/.jpg into the signatures folder."""
+    found={}
+    for role in SIGNATURE_ROLES:
+        configured=text(config.get(role+'_signature'))
+        path=None
+        if configured:
+            path=Path(configured); path=path if path.is_absolute() else base/path
+            if not path.is_file(): raise InputError(f'Signature file for {role.replace("_"," ")} not found: {configured}')
+        else:
+            for ext in ('png','jpg','jpeg'):
+                cand=base/'signatures'/f'{role.replace("_","-")}.{ext}'
+                if cand.is_file(): path=cand;break
+        if path: found[role]=signature_image(str(path),base)
+    return found
+
 def read_details(sheet,routes):
     raw=[{},{}]; seen=set()
     for row in sheet.iter_rows(min_row=5,max_col=3):
