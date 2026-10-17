@@ -5,6 +5,7 @@ generated/
 # Real signature images
 *.png
 !fonts/**
+!assets/**
 
 # Python
 __pycache__/
