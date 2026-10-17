@@ -1,6 +1,6 @@
 # Bus Challan Autofiller
 
-Version 1.1.0 · see [CHANGELOG.md](CHANGELOG.md)
+Version 1.1.1 · see [CHANGELOG.md](CHANGELOG.md)
 
 Generates numbered bus challans in Bengali and English. Each challan has a **Main** form (outgoing trip) and a **Secondary** form (return trip) that share one challan number. Every page carries 36 seats, A-1 to I-4.
 
@@ -59,6 +59,7 @@ Only Fixed and Percent counters have commission deducted. Percentage commission 
 - The Excel file has live formulas. Before printing, Python recalculates everything from the source values. It does not trust old formula caches or totals that were edited by hand.
 - Keep all seats from A-1 to I-4. Even if you reorder the rows, the print follows the normal seat order.
 - The checker gets one large seal-and-signature cell instead of a cell per seat.
+- Each form ends with two signature lines: Booking master and Manager.
 
 ## Trip Details
 
