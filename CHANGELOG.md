@@ -10,6 +10,6 @@
 - Added `--version` command-line option and version shown in the app window title.
 - Sample PDFs and HTML regenerated with the new font.
 
-## 1.0.0
+## 1.0.0 - 2026-04 (first version)
 - Numbered Main and Secondary challans in Bengali and English.
 - Excel input, counter commissions, signature images, local reprint register.
