@@ -5,7 +5,9 @@ from pathlib import Path
 import sys,tempfile,unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import bus_data as data
-import challan_autofill as app
+import importlib.util
+_spec=importlib.util.spec_from_file_location('challan_autofill',Path(__file__).resolve().parents[1]/'challan-autofill.py')
+app=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(app)
 from print_forms import document
 
 class ChallanTests(unittest.TestCase):
@@ -13,7 +15,7 @@ class ChallanTests(unittest.TestCase):
         from openpyxl import load_workbook
         self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.folder=Path(self.tmp.name);self.path=self.folder/'input.xlsx';self.registry=self.folder/'register.sqlite3'
-        self.wb=load_workbook(app.BASE/'challan_input.xlsx');self.addCleanup(self.wb.close)
+        self.wb=load_workbook(app.BASE/'challan-input.xlsx');self.addCleanup(self.wb.close)
         s=self.wb['Trip Details']
         for cell,v in {'B6':'TEST-VEHICLE','B9':'Driver A','B10':'01000000000','B11':'Guide A','B12':'01000000001','B13':'Checker A','B14':'ঢাকা–চট্টগ্রাম','B15':date(2026,10,16),'C15':date(2026,10,17),'B16':time(9),'C16':time(12)}.items():s[cell]=v
         c=self.wb['Counters']
@@ -136,7 +138,7 @@ class ChallanTests(unittest.TestCase):
         with self.assertRaisesRegex(data.InputError,'formula'):self.load()
     def test_shipped_dropdowns_and_blank_counters(self):
         from openpyxl import load_workbook
-        wb=load_workbook(app.BASE/'challan_input.xlsx')
+        wb=load_workbook(app.BASE/'challan-input.xlsx')
         try:
             self.assertEqual(len(wb['Main'].data_validations.dataValidation),1)
             self.assertIn('Counters',wb['Main'].data_validations.dataValidation[0].formula1)

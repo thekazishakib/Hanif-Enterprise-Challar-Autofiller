@@ -1,7 +1,7 @@
 Bus Challan - Bengali and English
 
 1. Extract the ZIP. Python 3.10+ is required. Run setup.cmd the first time.
-2. Open challan_input.xlsx. On the Counters sheet, enter your real counter names and commissions.
+2. Open challan-input.xlsx. On the Counters sheet, enter your real counter names and commissions.
 3. The Routes sheet already has Dhaka-Chattogram at 300 BDT. Add other routes if needed.
 4. Fill in Trip Details. In Main and Secondary, choose a Counter for every seat that has a passenger. Save.
 5. Open run.cmd, choose a language, and click Save NEW challan. Both language forms are created.

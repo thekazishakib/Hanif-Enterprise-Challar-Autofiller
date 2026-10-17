@@ -49,7 +49,7 @@ def gui():
     f=ttk.Frame(root,padding=24);f.pack(fill='both',expand=True)
     ttk.Label(f,text='বাস চালান · বাংলা / English',font=('Nirmala UI',18,'bold')).pack(anchor='w')
     ttk.Label(f,text='Fill Trip Details, choose counters in Main / Secondary, then save the workbook.').pack(anchor='w',pady=(8,14))
-    chosen=tk.StringVar(value=str(BASE/'challan_input.xlsx'));ttk.Entry(f,textvariable=chosen,width=95).pack(fill='x')
+    chosen=tk.StringVar(value=str(BASE/'challan-input.xlsx'));ttk.Entry(f,textvariable=chosen,width=95).pack(fill='x')
     def choose():
         p=filedialog.askopenfilename(filetypes=[('Excel workbook','*.xlsx')],initialdir=BASE)
         if p:chosen.set(p)

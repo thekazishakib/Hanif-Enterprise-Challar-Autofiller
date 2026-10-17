@@ -2,7 +2,7 @@
 
 # Bus Challan Autofiller
 
-Version 1.3.0 · see [CHANGELOG.md](CHANGELOG.md)
+Version 1.3.1 · see [CHANGELOG.md](CHANGELOG.md)
 
 Generates numbered bus challans in Bengali and English. Each challan has a **Main** form (outgoing trip) and a **Secondary** form (return trip) that share one challan number. Every page carries 36 seats, A-1 to I-4.
 
@@ -14,7 +14,7 @@ Bengali prints use **Noto Serif Bengali**, bundled inside the app, so the forms 
 
 1. Extract the ZIP. On Windows you need Python 3.10+ with pip and Tcl/Tk.
 2. Run `setup.cmd` once. It installs the libraries for reading Excel files and signature images, so it needs an internet connection.
-3. Open `challan_input.xlsx`. In the **Counters** sheet, enter your real counter names first. Then fill in **Trip Details**, and pick a counter for each seat in **Main** and **Secondary**. Save the file.
+3. Open `challan-input.xlsx`. In the **Counters** sheet, enter your real counter names first. Then fill in **Trip Details**, and pick a counter for each seat in **Main** and **Secondary**. Save the file.
 4. Run `run.cmd`, choose a language, and click **Save NEW challan**.
 5. Pick an output folder. Both language versions are saved, and the language you selected opens in your browser.
 6. Click **Print / PDF**, choose A4 and 100% scale, and turn off the browser's header and footer.
@@ -116,10 +116,10 @@ The `fonts/` folder contains Noto Serif Bengali (regular and semi-bold, Bengali 
 ## Command line
 
 ```text
-python challan_autofill.py challan_input.xlsx --out generated --language bn --open
-python challan_autofill.py --reprint 01/2026 --out generated --language en --open
-python challan_autofill.py --blank --out generated
-python challan_autofill.py --version
+python challan-autofill.py challan-input.xlsx --out generated --language bn --open
+python challan-autofill.py --reprint 01/2026 --out generated --language en --open
+python challan-autofill.py --blank --out generated
+python challan-autofill.py --version
 python -m unittest discover -s tests -v
 ```
 
