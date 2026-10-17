@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.3.0 - 2026-10-17
+- Booking master, Manager and Checker signature images are added to every challan automatically from the `signatures/` folder (or paths in `settings.json`).
+- Missing images leave the line blank; a configured but missing file stops with a clear error.
+- New tests for the fixed signatures.
+
+## 1.2.1 - 2026-10-17
+- Heading logo made larger.
+
+## 1.2.0 - 2026-10-17
+- Red company symbol added before the company name in the form heading.
+- Same symbol added as a very faint page-background watermark.
+- All text inside the table is now centered.
+- Added `assets/` folder with the logo files; README shows the logo.
+
 ## 1.1.1 - 2026-10-17
 - Bottom signature line is now "Booking master signature" and "Manager signature". The driver signature line was removed.
 

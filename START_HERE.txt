@@ -13,6 +13,9 @@ Main and Secondary share one number. The year comes from the Main trip date.
 Signatures: use Draw signature to make a PNG, or use your own PNG/JPEG.
 Keep the image next to the Excel file and enter its name in Signature File on the Counters sheet.
 
+Fixed signatures: put booking-master.png, manager.png and checker.png in the signatures folder.
+They are added to every challan automatically. See signatures/README.txt.
+
 Register: once challan-register.sqlite3 exists, keep it with the app.
 Bengali prints use the bundled Noto Serif Bengali font (keep the fonts folder).
 Full rules are in README.md. The sample PDFs only show the blank form layout.
