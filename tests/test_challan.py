@@ -114,6 +114,21 @@ class ChallanTests(unittest.TestCase):
         self.wb['Counters']['E5']='signature.png';self.wb['Trip Details']['B9']='<script>alert(1)</script>'
         html=document(self.load(),{},'en')
         self.assertIn('data:image/png;base64,',html);self.assertIn('&lt;script&gt;',html);self.assertNotIn('<script>alert',html)
+    def test_fixed_role_signatures_added_automatically(self):
+        from PIL import Image
+        cfg=dict(app.load_config(app.BASE/'settings.json'))
+        for role in ['booking_master','manager','checker']:
+            path=self.folder/(role+'.png');Image.new('RGBA',(120,40),(0,0,0,0)).save(path);cfg[role+'_signature']=str(path)
+        config=app.with_signatures(cfg)
+        for lang in ['bn','en']:
+            html=document(self.load(),config,lang)
+            self.assertEqual(html.count('class="signature-fixed"'),4)
+            self.assertEqual(html.count('class="checker-signature"'),2)
+    def test_role_signatures_optional_and_missing_file_reported(self):
+        html=document(self.load(),app.with_signatures(app.load_config(app.BASE/'settings.json')),'bn')
+        self.assertNotIn('class="signature-fixed"',html);self.assertNotIn('class="checker-signature"',html)
+        with self.assertRaisesRegex(data.InputError,'not found'):
+            app.with_signatures({'manager_signature':str(self.folder/'nope.png')})
     def test_input_formula_rejected_but_calculation_caches_ignored(self):
         self.wb['Main']['D5']=99999
         self.assertEqual(self.load()[0]['seats']['A-1']['Fare BDT'],300)
