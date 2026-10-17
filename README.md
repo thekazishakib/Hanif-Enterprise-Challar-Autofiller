@@ -1,8 +1,12 @@
+<p align="center"><img src="assets/logo.png" alt="Hanif Enterprise" width="360"></p>
+
 # Bus Challan Autofiller
 
-Version 1.1.1 · see [CHANGELOG.md](CHANGELOG.md)
+Version 1.3.0 · see [CHANGELOG.md](CHANGELOG.md)
 
 Generates numbered bus challans in Bengali and English. Each challan has a **Main** form (outgoing trip) and a **Secondary** form (return trip) that share one challan number. Every page carries 36 seats, A-1 to I-4.
+
+Each form header shows the red company symbol before the company name, and the same symbol appears as a very faint watermark behind the table. All text inside the table is centered.
 
 Bengali prints use **Noto Serif Bengali**, bundled inside the app, so the forms look the same on any computer, online or offline. English prints use Times New Roman. The company name, head office and phone numbers come from `settings.json`. No passenger, driver or transaction data from old samples is included.
 
@@ -73,9 +77,25 @@ If an outside vehicle is taken, fill in **Coaster No, Coaster Date, Coaster Time
 
 Book Cash, Counter Deposit, Refund Deposit, Fuel Deposit, Wash Deposit, B5 Deposit and Sohoj Cash start at 0. Enter your own amounts when needed. They are separate deposit records. No extra cash-settlement calculation is added.
 
-## Electronic signatures
+## Fixed signatures: Booking master, Manager and Checker
 
-Click **Draw signature** to open the local signature pad. Draw your authorized signature with a mouse, finger or pen, then save it as a PNG. Put the file next to the Excel file and enter its name in `Signature File` on the Counters sheet. You can also use an existing PNG or JPEG (under 2 MB, at most 4000 pixels).
+Put three signature images in the `signatures/` folder with exactly these names:
+
+| File | Appears |
+|---|---|
+| `booking-master.png` | Above the "Booking master signature" line at the bottom |
+| `manager.png` | Above the "Manager signature" line at the bottom |
+| `checker.png` | In the checker cell, above "Seal and signature" |
+
+`.jpg` and `.jpeg` also work. A PNG with a transparent background looks best. Each image must be under 2 MB and at most 4000 pixels. They are added to every new challan, in both languages and on both Main and Secondary, with no extra clicks.
+
+If a file is missing, that line stays blank for hand signing. To keep the images somewhere else, set `booking_master_signature`, `manager_signature` or `checker_signature` in `settings.json` to a file path. If a path is set but the file does not exist, the app stops with a clear message instead of printing a blank line.
+
+The checker image is one fixed image for both trips. Use **Draw signature** to create the PNGs. Only use signatures of people who have authorized this.
+
+## Counter signatures
+
+These are the per-seat counter signatures. Click **Draw signature** to open the local signature pad. Draw your authorized signature with a mouse, finger or pen, then save it as a PNG. Put the file next to the Excel file and enter its name in `Signature File` on the Counters sheet. You can also use an existing PNG or JPEG (under 2 MB, at most 4000 pixels).
 
 When that counter is chosen, the image is placed in the signature cell of the matching seat. Without an image, the Signatory name is shown. Without a name, the cell stays empty. Nothing is made up. This places a picture of a signature and does not add any cryptographic certificate. Everything runs locally, and the signature pad uploads nothing.
 
@@ -84,6 +104,10 @@ When that counter is chosen, the image is placed in the signature cell of the ma
 Edit `settings.json` to change the Bengali and English company name, office address and phone numbers. Names of people are not translated automatically. They print exactly as you type them. Routes and counters have separate English columns.
 
 Every new challan produces `main-and-secondary-bn.html` and `main-and-secondary-en.html`. Both open offline. In each language, Main comes first and Secondary second. If you enter long text, check the print preview.
+
+## Logo
+
+The `assets/` folder holds `logo.png` (full logo, used in this README), `logo-symbol.png` (red symbol, used as the watermark) and `logo-symbol-small.png` (red symbol, used beside the company name). To change the logo, replace the two symbol files with your own PNGs (square, transparent background). If a file is missing, that element is simply left out. Images are embedded in every generated HTML file.
 
 ## Fonts
 
