@@ -4,7 +4,7 @@ import base64
 from html import escape
 from pathlib import Path
 from bus_data import SEATS,BN,EN
-
+ 
 FONT_DIR=Path(__file__).resolve().parent/'fonts'
 ASSET_DIR=Path(__file__).resolve().parent/'assets'
 def _data_uri(name):
@@ -23,7 +23,7 @@ def font_face_css():
             data=base64.b64encode(f.read_bytes()).decode('ascii')
             out.append(f"@font-face{{font-family:'Noto Serif Bengali';font-style:normal;font-weight:{weight};font-display:block;src:url(data:font/woff2;base64,{data}) format('woff2');unicode-range:{rng}}}")
     return ''.join(out)
-
+ 
 LABELS={
  'Challan No':('চালান নং','Challan no.'),'Vehicle No':('গাড়ি নং','Vehicle no.'),'Coach No':('কোচ নং','Coach no.'),'Permit No':('পারমিট নং','Permit no.'),
  'Driver':('চালক','Driver'),'Driver Mobile':('মোবাইল','Mobile'),'Guide':('গাইড','Guide'),'Guide Mobile':('মোবাইল','Mobile'),
@@ -31,7 +31,7 @@ LABELS={
  'Book Cash':('খাতা ক্যাশ','Book cash'),'Counter Deposit':('কাউন্টার জমা (-)','Counter deposit (-)'),
  'Refund Deposit':('রিফান্ড জমা','Refund deposit'),'Fuel Deposit':('তেল জমা (+)','Fuel deposit (+)'),
  'Wash Deposit':('ওয়াশ জমা','Wash deposit'),'B5 Deposit':('B5 জমা (-)','B5 deposit (-)'), 'Sohoj Cash':('সহজ ক্যাশ (-)','Sohoj cash (-)')}
-
+ 
 def esc(v): return escape(str(v),quote=True)
 def word(bn,en,lang): return en if lang=='en' else bn
 def numeric(n,lang):
@@ -41,7 +41,7 @@ def numeric(n,lang):
 def display(v,lang):
     s=str(v or '')
     return esc(s.translate(EN) if lang=='en' else s)
-
+ 
 def section(trip,index,config,lang):
     d=trip['details']; outgoing=index==0
     def val(k): return display(d.get(k,''),lang) or '________'
@@ -82,7 +82,7 @@ def section(trip,index,config,lang):
     <div class="metadata">{metadata}</div>{route}{coaster}<table><colgroup><col style="width:6%"><col style="width:23%"><col style="width:6%"><col style="width:10%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:20%"></colgroup>
     <thead><tr>{''.join('<th>'+word(*h,lang)+'</th>' for h in headings)}</tr></thead><tbody>{''.join(rows)}</tbody></table>
     <div class="cash">{cash}</div><div class="signatures"><div class="sigbox"><div class="sigimg">{sig_img("booking_master","signature-fixed")}</div><div>{word('বুকিং মাস্টারের স্বাক্ষর','Booking master signature',lang)}: __________________</div></div><div class="sigbox"><div class="sigimg">{sig_img("manager","signature-fixed")}</div><div>{word('ম্যানেজারের স্বাক্ষর','Manager signature',lang)}: __________________</div></div></div></section>'''
-
+ 
 CSS='''
 *{box-sizing:border-box}body{margin:0;background:#e9eef2;color:#17202a;font-family:"Noto Serif Bengali",serif}body.en{font-family:"Times New Roman","Noto Serif Bengali",serif}
 .toolbar{max-width:980px;margin:18px auto;display:flex;gap:18px;align-items:center;font:14px Arial,sans-serif;padding:0 18px}.toolbar button{border:0;border-radius:5px;background:#176e8b;color:white;font:inherit;padding:13px 20px;cursor:pointer}.toolbar p{margin:0;line-height:1.5}.warning{color:#9e223d;display:none}.bn .toolbar{font-family:"Noto Serif Bengali",serif}
@@ -98,10 +98,11 @@ table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8pt}th,td
 @page{size:A4;margin:10mm}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}th{-webkit-print-color-adjust:exact;print-color-adjust:exact}.cash,.signatures,.sigbox,.metadata,.route,.coaster{break-inside:avoid}tr{break-inside:avoid}}
 @media screen{.sheet{outline:10mm solid white;margin:18mm auto}}
 '''
-
+ 
 def document(trips,config,lang='bn'):
     if lang not in ('bn','en'):raise ValueError('Language must be bn or en.')
     button=word('প্রিন্ট / PDF','Print / Save PDF',lang)
     note=word('A4, ১০০% স্কেল। ব্রাউজারের হেডার ও ফুটার বন্ধ রাখুন।','Use A4 at 100% scale. Turn browser headers and footers off.',lang)
     warning=word('লেখা বেশি বড় হয়েছে। প্রিন্ট করার আগে পৃষ্ঠা দেখে নিন।','Long content may need extra pages. Check print preview.',lang)
     return f'''<!doctype html><html lang="{lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{word('ই-চালান','E-Challan',lang)}</title><style>{font_face_css()}{CSS}</style></head><body class="{lang}"><div class="toolbar"><button onclick="window.print()">{button}</button><div><p>{note}</p><p class="warning" id="fit-warning">{warning}</p></div></div>{''.join(section(t,i,config,lang) for i,t in enumerate(trips))}<script>document.fonts.ready.then(()=>{{if([...document.querySelectorAll('.sheet')].some(s=>s.offsetHeight>1046))document.getElementById('fit-warning').style.display='block';}});</script></body></html>'''
+ 
